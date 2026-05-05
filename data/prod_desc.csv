@@ -1,0 +1,52 @@
+column_names,column_description
+countrycode,3-letter ISO country code
+country,Country name
+currency_unit,Currency unit
+year,Year
+rgdpe,Expenditure-side real GDP at chained PPPs (in mil. 2021US$)
+rgdpo,Output-side real GDP at chained PPPs (in mil. 2021US$)
+pop,Population (in millions)
+emp,Number of persons engaged (in millions)
+avh,Average annual hours worked by persons engaged (source: The Conference Board)
+hc,"Human capital index, see note hc"
+ccon,"Real consumption of households and government, at current PPPs (in mil. 2021US$)"
+cda,"Real domestic absorption, see note cda"
+cgdpe,Expenditure-side real GDP at current PPPs (in mil. 2021US$)
+cgdpo,Output-side real GDP at current PPPs (in mil. 2021US$)
+cn,Capital stock at current PPPs (in mil. 2021US$)
+ck,Capital services levels at current PPPs (USA=1)
+ctfp,TFP level at current PPPs (USA=1)
+cwtfp,Welfare-relevant TFP levels at current PPPs (USA=1)
+rgdpna,Real GDP at constant 2021 national prices (in mil. 2021US$)
+rconna,Real consumption at constant 2021 national prices (in mil. 2021US$)
+rdana,Real domestic absorption at constant 2021 national prices (in mil. 2021US$)
+rnna,Capital stock at constant 2021 national prices (in mil. 2021US$)
+rkna,Capital services at constant 2021 national prices (2021=1)
+rtfpna,TFP at constant national prices (2021=1)
+rwtfpna,Welfare-relevant TFP at constant national prices (2021=1)
+labsh,Share of labour compensation in GDP at current national prices
+irr,Real internal rate of return
+delta,Average depreciation rate of the capital stock
+xr,"Exchange rate, national currency/USD (market+estimated)"
+pl_con,"Price level of CCON (PPP/XR), price level of USA GDPo in 2021=1"
+pl_da,"Price level of CDA (PPP/XR), price level of USA GDPo in 2021=1"
+pl_gdpo,"Price level of CGDPo (PPP/XR),  price level of USA GDPo in 2021=1"
+i_cig,"0/1/2/3/4, see note i_cig"
+i_xm,"0/1/2, see note i_xm"
+i_xr,0/1: the exchange rate is market-based (0) or estimated (1)
+i_outlier,"0/1, see note i_outlier"
+i_irr,"0/1/2/3, see note i_irr"
+cor_exp,"Correlation between expenditure shares, see note cor_exp"
+csh_c,Share of household consumption at current PPPs
+csh_i,Share of gross capital formation at current PPPs
+csh_g,Share of government consumption at current PPPs
+csh_x,Share of merchandise exports at current PPPs
+csh_m,Share of merchandise imports at current PPPs
+csh_r,Share of residual trade and GDP statistical discrepancy at current PPPs
+pl_c,"Price level of household consumption,  price level of USA GDPo in 2021=1"
+pl_i,"Price level of capital formation, price level of USA GDPo in 2021=1"
+pl_g,"Price level of government consumption, price level of USA GDPo in 2021=1"
+pl_x,"Price level of exports, price level of USA GDPo in 2021=1"
+pl_m,"Price level of imports, price level of USA GDPo in 2021=1"
+pl_n,"Price level of the capital stock, price level of USA 2021=1"
+pl_k,"Price level of the capital services, price level of USA=1"
