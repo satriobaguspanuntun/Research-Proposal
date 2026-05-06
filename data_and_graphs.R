@@ -238,12 +238,12 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
 # TFP by comparison 
 # ── Period Averages (sub-periods of interest) ──────────────
 periods <- list(
-  "Pre-Crisis (1970–1996)"      = 1970:1996,
-  "Crisis (1997–1999)"          = 1997:1999,
-  "Recovery (2000–2007)"        = 2000:2007,
-  "Commodity Boom (2008–2014)"  = 2008:2014,
-  "Post-Boom (2015–2019)"       = 2015:2019,
-  "COVID & Recovery (2020–)"    = 2020:2023
+  "1970–1996"      = 1970:1996,
+  "1997–1999"      = 1997:1999,
+  "2000–2007"      = 2000:2007,
+  "2008–2014"      = 2008:2014,
+  "2015–2019"      = 2015:2019,
+  "2020–2023"      = 2020:2023
 )
 
 countries <- list("China", "Indonesia","Japan", "Republic of Korea", "Malaysia","Philippines", "Thailand", "Viet Nam")
@@ -298,4 +298,131 @@ period_summary_multiple <- pmap(tasks, function(country_name, period_vector) {
   return(subset_df)
 }) %>% 
   list_rbind()
+
+plot_tfp_multiple <- period_summary_multiple %>% 
+  filter(country %in% c("Indonesia", "Republic of Korea", "Malaysia", "Philippines",
+                        "Thailand", "China")) %>% 
+  pivot_longer(cols = c(Capital, Labour, TFP),
+               names_to = "Var",
+               values_to = "Value") %>% 
+  select(-GDP_growth) %>% 
+  mutate(country = factor(country, 
+                          levels = c("Indonesia", "Republic of Korea", "Malaysia",
+                                     "Philippines","Thailand", "China")),
+         period = factor(period, 
+                         levels = unique(period_summary_multiple$period)),
+         Var = factor(Var,
+                      levels = c("TFP", "Labour", "Capital")))
+
+# ── Color palette consistent with your earlier charts ──────────────────────────
+ga_colors <- c(
+  "Capital" = "#1B4F72",
+  "Labour"  = "#2E86C1",
+  "TFP"     = "#D35400"
+)
+
+# ── GDP growth dot data for overlay ───────────────────────────────────────────
+dot_data <- period_summary_multiple %>%
+  filter(country %in% c("Indonesia", "Republic of Korea", "Malaysia",
+                        "Philippines", "Thailand", "China")) %>%
+  mutate(
+    country = factor(country,
+                     levels = c("Indonesia", "Republic of Korea", "Malaysia",
+                                "Philippines", "Thailand", "China")),
+    period  = factor(period, levels = unique(period_summary_multiple$period))
+  )
+
+# ── Highlight Indonesia label ─────────────────────────────────────────────────
+country_labels <- c(
+  "Indonesia"        = "Indonesia ★",
+  "Republic of Korea"= "Korea",
+  "Malaysia"         = "Malaysia",
+  "Philippines"      = "Philippines",
+  "Thailand"         = "Thailand",
+  "China"            = "China"
+)
+
+p4 <- ggplot(data   = plot_tfp_multiple,
+             mapping = aes(x = period, y = Value, fill = Var)) +
+  
+  # ── Stacked bars ────────────────────────────────────────────────────────────
+  geom_col(position = "stack", width = 0.7, alpha = 0.92) +
+  
+  # ── Zero line ───────────────────────────────────────────────────────────────
+  geom_hline(yintercept = 0, linewidth = 0.4, color = "grey30") +
+  
+  # ── GDP growth dot + line overlay ───────────────────────────────────────────
+  geom_point(data     = dot_data,
+             aes(x    = period, y = GDP_growth),
+             inherit.aes = FALSE,
+             shape    = 18, size = 2.8, color = "black") +
+  geom_line(data      = dot_data,
+            aes(x     = period, y = GDP_growth, group = 1),
+            inherit.aes = FALSE,
+            linetype  = "dashed", color = "black", linewidth = 0.55) +
+  
+  # ── Facet ───────────────────────────────────────────────────────────────────
+  facet_wrap(~ country,
+             scales   = "free_y",
+             ncol     = 3,
+             labeller = labeller(country = country_labels)) +
+  
+  # ── Scales ──────────────────────────────────────────────────────────────────
+  scale_fill_manual(
+    values = ga_colors,
+    name   = "Source of Growth",
+    guide  = guide_legend(reverse = TRUE)  # Capital at bottom, TFP at top
+  ) +
+  scale_y_continuous(
+    n.breaks = 5
+  ) +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 12)) +
+  
+  # ── Labels ──────────────────────────────────────────────────────────────────
+  labs(
+    title    = "Sources of Real GDP Growth — Indonesia vs ASEAN & East Asian Peers",
+    subtitle = "Stacked bars = factor contributions (pp) · ◆ dashed = total GDP growth · APO Productivity Database 2025",
+    x        = NULL,
+    y        = "Average Annual Contribution (pp)",
+    caption  = "Sub-periods: Pre-Crisis (1980–96), Crisis (1997–99), Recovery (2000–07),\nCommodity Boom (2008–14), Post-Boom (2015–19), COVID & After (2020–23)\nSource: APO Productivity Database 2025 Ver.1"
+  ) +
+  
+  # ── Theme ───────────────────────────────────────────────────────────────────
+  theme_minimal(base_size = 11) +
+  theme(
+    # Facet strip — bold Indonesia
+    strip.text         = element_text(face = "bold", size = 10.5),
+    strip.background   = element_rect(fill = "grey93", color = NA),
+    
+    # Axis
+    axis.text.x        = element_text(angle = 30, hjust = 1, size = 7.5,
+                                      color = "grey30"),
+    axis.text.y        = element_text(size = 8),
+    axis.title.y       = element_text(size = 9, margin = margin(r = 8)),
+    
+    # Grid
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "grey88"),
+    panel.spacing      = unit(1.1, "lines"),
+    
+    # Legend
+    legend.position    = "bottom",
+    legend.direction   = "horizontal",
+    legend.title       = element_text(size = 9, face = "bold"),
+    legend.text        = element_text(size = 9),
+    legend.key.size    = unit(0.45, "cm"),
+    legend.margin      = margin(t = 4),
+    
+    # Titles
+    plot.title         = element_text(face = "bold", size = 13),
+    plot.subtitle      = element_text(size = 9, color = "grey40",
+                                      margin = margin(b = 8)),
+    plot.caption       = element_text(size = 7.5, color = "grey50",
+                                      hjust = 0, margin = margin(t = 8)),
+    plot.margin        = margin(12, 14, 10, 12)
+  )
+
+
+
 
