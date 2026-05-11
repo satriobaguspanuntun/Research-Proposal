@@ -18,6 +18,12 @@ editor: visual
 
 ### TFP section and comparison to other peers
 
+Highlight:
+1. Indonesia TFP has loose its steam, economic growth driven
+by capital accumulation and labour. 
+2. Asian Financial crisis, had a significant impact on the structure of the economy. 
+3. 
+
 ### Manufacturing is gone, long live commodity
 
 -   Manufacturing share down
@@ -26,15 +32,37 @@ editor: visual
 
 ### The Light at the of the tunnel, but how far are we?
 
-```{r}
-1 + 1
-```
+#### Indonesia TFP
 
-You can add options to executable code like this
-
-```{r}
+```{r Indonesia TFP}
+#| label: fig-growth-decomp-Indonesia
+#| fig-width: 13
+#| fig-height: 10
+#| fig-dpi: 300
+#| fig-cap: "Sources of Real GDP Growth — Indonesia"
+#| fig-align: center
+#| out-width: "100%"
+#| warning: false
+#| message: false
 #| echo: false
-2 * 2
+
+solow_growth_decomp(data = prod_asean_5, country_pick = "Indonesia", start = "1970",end = "2023",return_fig = TRUE)
+
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+#### TFP across countries
+
+```{r}
+#| label: fig-growth-decomp
+#| fig-width: 13
+#| fig-height: 10
+#| fig-dpi: 300
+#| fig-cap: "Sources of Real GDP Growth — Indonesia vs ASEAN Peers"
+#| fig-align: center
+#| out-width: "100%"
+#| warning: false
+#| message: false
+#| echo: false
+p4
+```
+

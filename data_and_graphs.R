@@ -139,9 +139,9 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
                 inherit.aes = FALSE,
                 linetype = "dashed", color = "black", linewidth = 0.7) +
       scale_fill_manual(
-        values = c("Capital" = "#2166ac",
-                   "Labour"  = "#58BA14",
-                   "TFP"     = "#F75836"),
+        values = c("Capital" = "#1B4F72",
+                   "Labour"  = "#2E86C1",
+                   "TFP"     = "#D35400"),
         name   = "Source of Growth"
       ) +
       labs(
@@ -168,17 +168,17 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
     p2 <- ggplot(plot_ts, aes(x = year, y = Contribution, fill = Component)) +
       geom_col(position = "stack", width = 0.85, alpha = 0.9) +
       geom_line(
-        data = t,
+        data = solow_data,
         aes(x = year, y = gY), inherit.aes = FALSE,
         color = "black", linewidth = 0.8, linetype = "solid"
       ) +
       scale_fill_manual(
-        values = c("Capital" = "#2166ac",
-                   "Labour"  = "#58BA14",
-                   "TFP"     = "#F75836"),
+        values = c("Capital" = "#1B4F72",
+                   "Labour"  = "#2E86C1",
+                   "TFP"     = "#D35400"),
         name = NULL
       ) +
-      scale_x_continuous(breaks = seq(1970, 2025, 5)) +
+      scale_x_continuous(breaks = seq(1970, 2023, 5)) +
       geom_hline(yintercept = 0, linewidth = 0.5, color = "grey40") +
       # Shade crisis periods
       annotate("rect", xmin = 1997, xmax = 1999.5,
@@ -234,7 +234,6 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
 }
 
 # Real GDP decomposition by Industry Origins
-
 # TFP by comparison 
 # ── Period Averages (sub-periods of interest) ──────────────
 periods <- list(
@@ -381,7 +380,7 @@ p4 <- ggplot(data   = plot_tfp_multiple,
   # ── Labels ──────────────────────────────────────────────────────────────────
   labs(
     title    = "Sources of Real GDP Growth — Indonesia vs ASEAN & East Asian Peers",
-    subtitle = "Stacked bars = factor contributions (pp) · ◆ dashed = total GDP growth · APO Productivity Database 2025",
+    subtitle = "Stacked bars = factor contributions (pp) · ◆ dashed = total GDP growth · PWT 11.0",
     x        = NULL,
     y        = "Average Annual Contribution (pp)",
     caption  = "Sub-periods: Pre-Crisis (1980–96), Crisis (1997–99), Recovery (2000–07),\nCommodity Boom (2008–14), Post-Boom (2015–19), COVID & After (2020–23)\nSource: APO Productivity Database 2025 Ver.1"
@@ -423,6 +422,6 @@ p4 <- ggplot(data   = plot_tfp_multiple,
     plot.margin        = margin(12, 14, 10, 12)
   )
 
-
+# 
 
 
