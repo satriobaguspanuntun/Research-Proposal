@@ -5,11 +5,26 @@ format: html
 editor: visual
 ---
 
-## 
+# The Sleeping Dragon that always sleeps: Indonesia Case
 
-## Running Code
+## Chapter 1: The Economic Growth Elsewhere
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   Explain briefly on the history, economic wise, leading up to the Asian Crisis
+-   This includes economic profiles, trajectory and structural transition
+-   Comparison to other Asian countries
+-   Commentary by the IMF, ADB, World bank at that time
+-   and then goes forward to today's economic condition
+-   ask questions, for example: why are we still here, where is the promised land?
+
+### TFP section and comparison to other peers
+
+### Manufacturing is gone, long live commodity
+
+-   Manufacturing share down
+
+### Excess Labour or Simply Mismanagement
+
+### The Light at the of the tunnel, but how far are we?
 
 ```{r}
 1 + 1
