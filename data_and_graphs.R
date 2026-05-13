@@ -44,17 +44,18 @@ wdi_data <- WDI(
          "manuf_exp" = TX.VAL.MANF.ZS.UN,
          "med_high_manuf_exp" = TX.MNF.TECH.ZS.UN)
 
-
 manuf_va_asean <- WDI(
   country = c("ID", "MY", "TH", "PH", "CN", "JP", "VN", "KR", "SG"),
   indicator = c(
     # Manufacturing
     "NV.IND.MANF.ZS", "NV.IND.MANF.KD.ZG", "NV.IND.MANF.CD",
-    "NV.IND.TOTL.ZS", "NV.SRV.TOTL.ZS", "NV.AGR.TOTL.ZS"),
+    "NV.IND.TOTL.ZS", "NV.SRV.TOTL.ZS", "NV.AGR.TOTL.ZS",
+    # Trade & Exports
+    "TX.VAL.MANF.ZS.UN", "TX.VAL.TECH.MF.ZS",
+    "TX.VAL.FUEL.ZS.UN", "TX.VAL.MMTL.ZS.UN", "TT.PRI.MRCH.XD.WD"),
   start = 1970,
   end = 2025,
   extra = TRUE)
-
 
 # productivity data (Penn world table)
 productivity <- haven::read_dta(file = "~/Research-Proposal/data/pwt110.dta")
@@ -464,6 +465,7 @@ p4 <- ggplot(data   = plot_tfp_multiple,
   )
 
 # Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
+
 
 
 
