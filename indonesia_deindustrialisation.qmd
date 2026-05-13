@@ -18,19 +18,7 @@ editor: visual
 
 ### TFP section and comparison to other peers
 
-Highlight:
-1. Indonesia TFP has loose its steam, economic growth driven
-by capital accumulation and labour. 
-2. Asian Financial crisis, had a significant impact on the structure of the economy. 
-3. 
-
-### Manufacturing is gone, long live commodity
-
--   Manufacturing share down
-
-### Excess Labour or Simply Mismanagement
-
-### The Light at the of the tunnel, but how far are we?
+Highlight: 1. Indonesia TFP has loose its steam, economic growth driven by capital accumulation and labour. 2. Asian Financial crisis, had a significant impact on the structure of the economy. 3.
 
 #### Indonesia TFP
 
@@ -47,6 +35,24 @@ by capital accumulation and labour.
 #| echo: false
 
 solow_growth_decomp(data = prod_asean_5, country_pick = "Indonesia", start = "1970",end = "2023",return_fig = TRUE)
+# Top accent line
+grid.lines(x = c(0, 1), y = 1, gp = gpar(col = "#3E2F5B", lwd = 12.5))
+
+# Corner accent square
+grid.rect(x = 0, y = 1, width = 0.04, height = 0.03,
+          just = c("left", "top"),
+          gp = gpar(fill = "#3E2F5B", lwd = 0, col = NA))
+
+grid.text(
+  "Satrio Bagus Panuntun",
+  x = 0.05,
+  y = 0.03,
+  just = c("left", "bottom"),
+  gp = gpar (
+    col = "grey50",
+    fontsize = 9
+  )
+)
 
 ```
 
@@ -64,5 +70,55 @@ solow_growth_decomp(data = prod_asean_5, country_pick = "Indonesia", start = "19
 #| message: false
 #| echo: false
 p4
+
+# Top accent line
+grid.lines(x = c(0, 1), y = 1, gp = gpar(col = "#3E2F5B", lwd = 12.5))
+
+# Corner accent square
+grid.rect(x = 0, y = 1, width = 0.04, height = 0.03,
+          just = c("left", "top"),
+          gp = gpar(fill = "#3E2F5B", lwd = 0, col = NA))
+
+grid.text(
+  "Satrio Bagus Panuntun",
+  x = 95.5,
+  y = 0.03,
+  just = c("right", "bottom"),
+  gp = gpar (
+    col = "grey50",
+    fontsize = 9
+  )
+)
+```
+### Manufacturing is gone, long live commodity.
+
+- Manufacturing share down.
+- Rodrik (2013) stipulate that the manufacturing is still the main engine of growth for countries to
+transform the economy and escape middle-income trap. (find more similar paper about this topic and its relation to Indonesia).
+- Indonesia manufacturing share is down prematurely compared to other countries, this can be look at from when did the share went down and then where did the GDP per capita stand.
+- Import-substituion industrial policy in 1970-1990 (Manufacturing value added per capita graphs)
+- IS policy is basically to substitute imported goods by producing the goods within the country to
+fulfill domestic demand.
+- Turned to a more export oriented policy after Asian financial crisis where IMF bailout requirement was to lower import tariff.
+- Many argue that one the main reason of Indonesia not taking off is primarily due trade liberalization, commodity boom cycle after Asian financial crisis, and ineffective import substitution policy which have made firms that are shielded from the said policy to be complacent and thus unwilling to innovate and compete in the international market.
+- FDI investment has shifted from manufacturing to other commodities sector such mining and CPO.
+
+# Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
+
+```{r}
+
+
+
 ```
 
+# Manufacturing intensity chart
+
+# Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
+
+# FDI movement across sectors
+
+# Manufacture employment share.
+
+### Excess Labour or Simply Mismanagement
+
+### The Light at the of the tunnel, but how far are we? If so, what we can we do about it

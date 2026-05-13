@@ -16,6 +16,7 @@ library(WDI)
 library(comtradr)
 library(haven)
 library(patchwork)
+library(grid)
 
 # WDI data
 wdi_data <- WDI(
@@ -43,11 +44,24 @@ wdi_data <- WDI(
          "manuf_exp" = TX.VAL.MANF.ZS.UN,
          "med_high_manuf_exp" = TX.MNF.TECH.ZS.UN)
 
+
+manuf_va_asean <- WDI(
+  country = c("ID", "MY", "TH", "PH", "CN", "JP", "VN", "KR", "SG"),
+  indicator = c(
+    # Manufacturing
+    "NV.IND.MANF.ZS", "NV.IND.MANF.KD.ZG", "NV.IND.MANF.CD",
+    "NV.IND.TOTL.ZS", "NV.SRV.TOTL.ZS", "NV.AGR.TOTL.ZS"),
+  start = 1970,
+  end = 2025,
+  extra = TRUE)
+
+
 # productivity data (Penn world table)
 productivity <- haven::read_dta(file = "~/Research-Proposal/data/pwt110.dta")
 
 # productivity ASEAN 5 + China + Japan + Korea
-asean_5 <- c("Indonesia", "Thailand", "Malaysia", "Philippines", "Viet Nam", "Japan", "China", "Republic of Korea")
+asean_5 <- c("China", "Indonesia","Japan", "Republic of Korea", "Malaysia",
+             "Philippines", "Thailand", "Viet Nam", "Singapore")
 
 prod_asean_5 <- productivity %>% filter(country %in% asean_5)
 
@@ -139,9 +153,9 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
                 inherit.aes = FALSE,
                 linetype = "dashed", color = "black", linewidth = 0.7) +
       scale_fill_manual(
-        values = c("Capital" = "#1B4F72",
-                   "Labour"  = "#2E86C1",
-                   "TFP"     = "#D35400"),
+        values = c("Capital" = "#3A0Ca3",
+                   "Labour"  = "#4361EE",
+                   "TFP"     = "#4CC9F0"),
         name   = "Source of Growth"
       ) +
       labs(
@@ -173,9 +187,9 @@ solow_growth_decomp <- function(data, country_pick, start, end, return_fig = TRU
         color = "black", linewidth = 0.8, linetype = "solid"
       ) +
       scale_fill_manual(
-        values = c("Capital" = "#1B4F72",
-                   "Labour"  = "#2E86C1",
-                   "TFP"     = "#D35400"),
+        values = c("Capital" = "#3A0Ca3",
+                   "Labour"  = "#4361EE",
+                   "TFP"     = "#4CC9F0"),
         name = NULL
       ) +
       scale_x_continuous(breaks = seq(1970, 2023, 5)) +
@@ -245,16 +259,40 @@ periods <- list(
   "2020–2023"      = 2020:2023
 )
 
-countries <- list("China", "Indonesia","Japan", "Republic of Korea", "Malaysia","Philippines", "Thailand", "Viet Nam")
+countries <- list("China", "Indonesia", "Japan", "Republic of Korea", "Malaysia",
+                  "Philippines", "Thailand", "Viet Nam", "Singapore")
 
 tasks <- expand_grid(
   country_name = countries,
   period_vector = names(periods)
 )
 
+# Vietnam treatment - didnt report labsh (estimate it using the median/average ASEAN labsh)
+# ASEAN labsh 
+asean_labsh <- prod_asean_5 %>% 
+  select(country, countrycode, year, labsh) %>% 
+  filter(country %in% c("Indonesia", "Malaysia", "Thailand", "Philippines", "Singapore")) %>% 
+  group_by(year) %>% 
+  summarise(
+    country = "Viet Nam",
+    asean_labsh_mean = mean(labsh, na.rm = TRUE),
+    asean_labsh_median = median(labsh, na.rm = TRUE))
+
+solow_data_viet <- prod_asean_5 %>% 
+  select(country, countrycode, year, rgdpna, emp, labsh, avh, hc, delta, rtfpna, rnna) %>% 
+  filter(country == "Viet Nam") %>% 
+  left_join(asean_labsh) %>% 
+  ungroup() %>% 
+  mutate(labsh = asean_labsh_mean,
+         rtfpna = 0) %>% 
+  select(country, countrycode, year, rgdpna, emp, labsh, avh, hc, delta, rtfpna, rnna) %>% 
+  drop_na()
+
+
 solow_data_comp <- prod_asean_5 %>% 
   select(country, countrycode, year, rgdpna, emp, labsh, avh, hc, delta, rtfpna, rnna) %>% 
   drop_na() %>% 
+  add_row(solow_data_viet) %>% 
   group_by(country) %>% 
   mutate(
     # 1. log difference to approximate annual growth rates
@@ -300,14 +338,14 @@ period_summary_multiple <- pmap(tasks, function(country_name, period_vector) {
 
 plot_tfp_multiple <- period_summary_multiple %>% 
   filter(country %in% c("Indonesia", "Republic of Korea", "Malaysia", "Philippines",
-                        "Thailand", "China")) %>% 
+                        "Thailand", "China", "Viet Nam", "Japan", "Singapore")) %>% 
   pivot_longer(cols = c(Capital, Labour, TFP),
                names_to = "Var",
                values_to = "Value") %>% 
   select(-GDP_growth) %>% 
   mutate(country = factor(country, 
                           levels = c("Indonesia", "Republic of Korea", "Malaysia",
-                                     "Philippines","Thailand", "China")),
+                                     "Philippines","Thailand", "China", "Viet Nam", "Japan", "Singapore")),
          period = factor(period, 
                          levels = unique(period_summary_multiple$period)),
          Var = factor(Var,
@@ -315,19 +353,19 @@ plot_tfp_multiple <- period_summary_multiple %>%
 
 # ── Color palette consistent with your earlier charts ──────────────────────────
 ga_colors <- c(
-  "Capital" = "#1B4F72",
-  "Labour"  = "#2E86C1",
-  "TFP"     = "#D35400"
+  "Capital" = "#3A0Ca3",
+  "Labour"  = "#4361EE",
+  "TFP"     = "#4CC9F0"
 )
 
 # ── GDP growth dot data for overlay ───────────────────────────────────────────
 dot_data <- period_summary_multiple %>%
   filter(country %in% c("Indonesia", "Republic of Korea", "Malaysia",
-                        "Philippines", "Thailand", "China")) %>%
+                        "Philippines", "Thailand", "China", "Viet Nam", "Japan", "Singapore")) %>%
   mutate(
     country = factor(country,
                      levels = c("Indonesia", "Republic of Korea", "Malaysia",
-                                "Philippines", "Thailand", "China")),
+                                "Philippines", "Thailand", "China", "Viet Nam", "Japan", "Singapore")),
     period  = factor(period, levels = unique(period_summary_multiple$period))
   )
 
@@ -338,7 +376,10 @@ country_labels <- c(
   "Malaysia"         = "Malaysia",
   "Philippines"      = "Philippines",
   "Thailand"         = "Thailand",
-  "China"            = "China"
+  "China"            = "China",
+  "Viet Nam"         = "Viet Nam",
+  "Japan"            = "Japan",
+  "Singapore"        = "Singapore"
 )
 
 p4 <- ggplot(data   = plot_tfp_multiple,
@@ -383,7 +424,7 @@ p4 <- ggplot(data   = plot_tfp_multiple,
     subtitle = "Stacked bars = factor contributions (pp) · ◆ dashed = total GDP growth · PWT 11.0",
     x        = NULL,
     y        = "Average Annual Contribution (pp)",
-    caption  = "Sub-periods: Pre-Crisis (1980–96), Crisis (1997–99), Recovery (2000–07),\nCommodity Boom (2008–14), Post-Boom (2015–19), COVID & After (2020–23)\nSource: APO Productivity Database 2025 Ver.1"
+    caption  = "Sub-periods: Pre-Crisis (1980–96), Crisis (1997–99), Recovery (2000–07),\nCommodity Boom (2008–14), Post-Boom (2015–19), COVID & After (2020–23)\nSource: Penn World Table 11.0"
   ) +
   
   # ── Theme ───────────────────────────────────────────────────────────────────
@@ -422,6 +463,30 @@ p4 <- ggplot(data   = plot_tfp_multiple,
     plot.margin        = margin(12, 14, 10, 12)
   )
 
-# 
+# Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
