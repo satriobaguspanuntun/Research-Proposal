@@ -90,18 +90,25 @@ grid.text(
   )
 )
 ```
+
 ### Manufacturing is gone, long live commodity.
 
-- Manufacturing share down.
-- Rodrik (2013) stipulate that the manufacturing is still the main engine of growth for countries to
-transform the economy and escape middle-income trap. (find more similar paper about this topic and its relation to Indonesia).
-- Indonesia manufacturing share is down prematurely compared to other countries, this can be look at from when did the share went down and then where did the GDP per capita stand.
-- Import-substituion industrial policy in 1970-1990 (Manufacturing value added per capita graphs)
-- IS policy is basically to substitute imported goods by producing the goods within the country to
-fulfill domestic demand.
-- Turned to a more export oriented policy after Asian financial crisis where IMF bailout requirement was to lower import tariff.
-- Many argue that one the main reason of Indonesia not taking off is primarily due trade liberalization, commodity boom cycle after Asian financial crisis, and ineffective import substitution policy which have made firms that are shielded from the said policy to be complacent and thus unwilling to innovate and compete in the international market.
-- FDI investment has shifted from manufacturing to other commodities sector such mining and CPO.
+-   Manufacturing share down.
+-   Rodrik (2013) stipulate that the manufacturing is still the main engine of growth for countries to transform the economy and escape middle-income trap. (find more similar paper about this topic and its relation to Indonesia).
+-   Indonesia manufacturing share is down prematurely compared to other countries, this can be look at from when did the share went down and then where did the GDP per capita stand.
+-   Import-substituion industrial policy in 1970-1990 (Manufacturing value added per capita graphs)
+-   IS policy is basically to substitute imported goods by producing the goods within the country to fulfill domestic demand.
+-   Turned to a more export oriented policy after Asian financial crisis where IMF bailout requirement was to lower import tariff.
+-   Many argue that one the main reason of Indonesia not taking off is primarily due trade liberalization, commodity boom cycle after Asian financial crisis, and ineffective import substitution policy which have made firms that are shielded from the said policy to be complacent and thus unwilling to innovate and compete in the international market.
+-   FDI investment has shifted from manufacturing to other commodities sector such mining and CPO.
+
+Indonesian Industrial Policy Context
+
+Indonesia began the experience rapid industrialisation following major political change and economic reforms in 1966-67 led by President Soeharto (Aswicahyono at al, 2011). During this period, the principal driver of the economy were agriculture and import substitution. In 1970's-1980s, however, Indonesia was benefited by the oil boom which has helped to prop up the economy out of significant hardship after a series of hyperinflation, stagnation and political turmoil from the previous decades. Revenues coming from oil exports were then invested into state-owned enterprises such as iron & steel, petroleum aluminium, and fertilizers. As the government aimed to boost the agriculture sector, these investment were part of the policy to support its growth by substituting its imported goods to be locally produced within to country, primarily on raw material production such as fertilizers, cement, chemicals, pulp and textiles. As a result, there was a large influx of workers into the manufacturing, slowly shifting away from agriculture sector.
+
+At the end of the oil boom in 1983, oil prices dropped, so thus the oil export revenues, coupled with an economic slowdown in the 1982-1986 period. This has led the government to liberalized the economy which include variety of deregulation reforms, such as reductions in tariff and non-tariff measures, deregulation of foreign direct investment regulations, financial sector reforms and an effort to curb monopoly power of large companies through state-induced divestiture. Such reforms had transformed the industrial development direction , geared for foreign companies to invest and built factories, from inward-looking to export-oriented posture. In contrast, the domestic industry was directed to machinery equipment, medium-high technology goods and several other commodities such as aircraft, engines and shipping (Kuncoro, 2007).
+
+## Talk about Asian financial crisis.
 
 # Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
 

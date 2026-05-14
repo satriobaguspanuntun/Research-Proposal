@@ -49,10 +49,12 @@ manuf_va_asean <- WDI(
   indicator = c(
     # Manufacturing
     "NV.IND.MANF.ZS", "NV.IND.MANF.KD.ZG", "NV.IND.MANF.CD",
-    "NV.IND.TOTL.ZS", "NV.SRV.TOTL.ZS", "NV.AGR.TOTL.ZS",
+    "NV.IND.TOTL.ZS", "NV.SRV.TOTL.ZS", "NV.AGR.TOTL.ZS","NV.IND.MANF.KD","NV.IND.MANF.KN",
     # Trade & Exports
     "TX.VAL.MANF.ZS.UN", "TX.VAL.TECH.MF.ZS",
-    "TX.VAL.FUEL.ZS.UN", "TX.VAL.MMTL.ZS.UN", "TT.PRI.MRCH.XD.WD"),
+    "TX.VAL.FUEL.ZS.UN", "TX.VAL.MMTL.ZS.UN", "TT.PRI.MRCH.XD.WD",
+    "PA.NUS.FCRF",       # Official exchange rate (LCU per USD)
+    "NY.GDP.DEFL.ZS"),    # GDP deflator Indonesia
   start = 1970,
   end = 2025,
   extra = TRUE)
@@ -466,7 +468,9 @@ p4 <- ggplot(data   = plot_tfp_multiple,
 
 # Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
 
-
+p5 <- manuf_va_asean %>% 
+  arrange(country, year) %>% 
+  
 
 
 
