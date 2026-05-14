@@ -467,15 +467,24 @@ p4 <- ggplot(data   = plot_tfp_multiple,
   )
 
 # Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
-
-p5 <- manuf_va_asean %>% 
+p5 <- apo_database %>% 
+  filter(code %in% c("10300", "11900"), country == "Indonesia") %>% 
+  pivot_longer(
+    cols = `1970`:`2023`,
+    names_to = "year",
+    values_to = "value"
+  ) %>%
+  select(country, country_id, variable, year, value) %>% 
+  pivot_wider(
+    names_from = variable,
+    values_from = value
+  ) %>%
+  mutate(
+    mva_pct_gdp = (Manufacturing / `GDP at basic price`) * 100
+  ) %>% 
   arrange(country, year) %>% 
-  
-
-
-
-
-
+  ggplot(mapping = aes(x = year, y = mva_pct_gdp, color = country)) +
+  geom_line()
 
 
 
