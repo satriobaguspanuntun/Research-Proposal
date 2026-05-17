@@ -18,7 +18,9 @@ editor: visual
 
 ### TFP section and comparison to other peers
 
-Highlight: 1. Indonesia TFP has loose its steam, economic growth driven by capital accumulation and labour. 2. Asian Financial crisis, had a significant impact on the structure of the economy. 3.
+Highlight: 1. Indonesia TFP has loose its steam, economic growth driven by capital accumulation and labour. 2. Asian Financial crisis, had a significant impact on the structure of the economy.
+
+
 
 #### Indonesia TFP
 
@@ -45,9 +47,9 @@ grid.rect(x = 0, y = 1, width = 0.04, height = 0.03,
 
 grid.text(
   "Satrio Bagus Panuntun",
-  x = 0.05,
+  x = 0.95,
   y = 0.03,
-  just = c("left", "bottom"),
+  just = c("right", "bottom"),
   gp = gpar (
     col = "grey50",
     fontsize = 9
@@ -108,19 +110,54 @@ Indonesia began the experience rapid industrialisation following major political
 
 At the end of the oil boom in 1983, oil prices dropped, so thus the oil export revenues, coupled with an economic slowdown in the 1982-1986 period. This has led the government to liberalized the economy which include variety of deregulation reforms, such as reductions in tariff and non-tariff measures, deregulation of foreign direct investment regulations, financial sector reforms and an effort to curb monopoly power of large companies through state-induced divestiture. Such reforms had transformed the industrial development direction , geared for foreign companies to invest and built factories, from inward-looking to export-oriented posture. In contrast, the domestic industry was directed to machinery equipment, medium-high technology goods and several other commodities such as aircraft, engines and shipping (Kuncoro, 2007).
 
-## Talk about Asian financial crisis.
+During the reign of the authoritarian new order regime (1967-1998), Indonesia has experienced structural changes in the economy from agriculture to manufacturing based, which can be seen from the rise of Manufcaturing share in GDP and manufacturing export.However, the asian financial crisis in 1997 has had a massive impact both economically and politically, thus changing the prior trajectory of leaping up the economic ladder. Following the 1997 crisis, Indonesia experienced significant capital flight from 1998 until 2001 (world bank 2018). Given the fact that many of these factories or firms relied on foreign debt and foreign exchange debt, the manufacturing sector was hit the hardest from the crisis. The dependency of foreign debt came from the previous policy measures to boost manufacturing sector through inviting foreign companies to off shore their factories to Indonesia, benefiting from low cost labour. On top of that, the nature of capital also changed during this period, the downfall of USSR which ended the cold war has led investment orientation to be less toward strategic/security alliance and more towards private profit, resulting capital to be mobile than ever before. Thus it becomes easier for capital to move across countries and sectors. In response, the government established new revitaliastion plan by adopting export-led recovery or expanding trade surplus to regain from the crisis (Jacob, 2004).
+
+In the post-crisis period, from 2000s to 2010's, Indonesian economy rebounded by about 5.1% average annual growth. However, the economic structure was shifting from manufacturing to other sectors such as service and informal sectors. The shift, however, can be attributed to two key arguments: First, during this period, the rise of China complicates the revival of manufacturing in Indonesia as Chinese economic model relies heavily on Industry and exports of manufacturing goods. This resulted a loss of competitive advantage for Indonesia in Manufacturing arena and shifted to commodity based export as commodities supplying to China becomes much more lucrative than manufacturing goods within the country. Second, commodity booms have moved investment away from manufacturing to mining, oil and gas and other commodities such Palm Oil. Primary exports surge during this period by xxx %, while secondary exports gradually fell inline with the fall of manufacturing share of GDP and manufacturing export share. 
+
 
 # Manufacturing VA % GDP Indonesia vs ASEAN & East Asian countries
 
 ```{r}
+#| label: fig-growth-decomp
+#| fig-width: 13
+#| fig-height: 10
+#| fig-dpi: 300
+#| fig-cap: "Sources of Real GDP Growth — Indonesia vs ASEAN Peers"
+#| fig-align: center
+#| out-width: "100%"
+#| warning: false
+#| message: false
+#| echo: false
 
+p5
+
+# Top accent line
+grid.lines(x = c(0, 1), y = 1, gp = gpar(col = "#3E2F5B", lwd = 12.5))
+
+# Corner accent square
+grid.rect(x = 0, y = 1, width = 0.04, height = 0.03,
+          just = c("left", "top"),
+          gp = gpar(fill = "#3E2F5B", lwd = 0, col = NA))
+
+grid.text(
+  "Satrio Bagus Panuntun",
+  x = 0.95,
+  y = 0.03,
+  just = c("right", "bottom"),
+  gp = gpar (
+    col = "grey50",
+    fontsize = 9
+  )
+)
 
 
 ```
 
-# Manufacturing intensity chart
-
 # Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
+
+# Primary vs Secondary Export
+
+# Manufacturing export intensity chart
 
 # FDI movement across sectors
 
