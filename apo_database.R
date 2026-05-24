@@ -50,7 +50,6 @@ apo_database <- map(apo_sheetnames, function(x) {
   
 }) %>% list_rbind()
 
-
 #UNSD data
 
 unsd_na_path <- "~/Research-Proposal/data/Download-GDPcurrent-USD-countries.xlsx"

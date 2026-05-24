@@ -18,9 +18,6 @@ editor: visual
 
 ### TFP section and comparison to other peers
 
-Highlight: 1. Indonesia TFP has loose its steam, economic growth driven by capital accumulation and labour. 2. Asian Financial crisis, had a significant impact on the structure of the economy.
-
-
 
 #### Indonesia TFP
 
@@ -59,7 +56,6 @@ grid.text(
 ```
 
 #### TFP across countries
-
 ```{r}
 #| label: fig-growth-decomp
 #| fig-width: 13

@@ -649,6 +649,7 @@ p5 <- apo_database %>%
   ggplot(mapping = aes(x = year, y = mva_pct_gdp, color = country, group = country)) +
   geom_line()
 
+# Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
 
 # ── 1. Better color palette ──────────────────────────────────────────────────
 # Option A: Highlight Indonesia, mute others
@@ -843,10 +844,9 @@ p5 <- ggplot() +
     plot.margin        = margin(15, 15, 15, 15)
   )
 
-
-# Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
-
 # Primary vs Secondary Export
+
+# Lall technology classification
 
 # Manufacturing export intensity chart
 
