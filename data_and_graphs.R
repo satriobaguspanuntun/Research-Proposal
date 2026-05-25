@@ -651,11 +651,12 @@ p5 <- apo_database %>%
 
 # Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
 
+# Manufacture value added % of total value added
 # ── 1. Better color palette ──────────────────────────────────────────────────
 # Option A: Highlight Indonesia, mute others
 country_colors <- c(
   "Indonesia"         = "#E63946",  # Bold red - your focus
-  "Vietnam"           = "#457B9D",  # Muted blue
+  "Viet Nam"           = "#457B9D",  # Muted blue
   "Republic of Korea" = "#1D3557",  # Dark blue
   "China"             = "#F4A261",  # Warm orange
   "Malaysia"          = "#2A9D8F",  # Teal
@@ -671,7 +672,7 @@ country_colors <- c(
 
 # ── 2. Prepare data ──────────────────────────────────────────────────────────
 plot_data <- unsd_na_data %>% 
-  filter(country %in% c("Indonesia", "Vietnam", "Republic of Korea", "China", 
+  filter(country %in% c("Indonesia", "Viet Nam", "Republic of Korea", "China", 
                         "Malaysia", "Thailand", "Philippines"), 
          approach == "Production") %>% 
   pivot_longer(
@@ -764,7 +765,7 @@ p5 <- ggplot() +
   scale_linewidth_manual(
     values = c(
       "Indonesia" = 1.3,
-      "Vietnam" = 0.9,
+      "Viet Nam" = 0.9,
       "Republic of Korea" = 0.9,
       "China" = 0.9,
       "Malaysia" = 0.9,
@@ -781,15 +782,15 @@ p5 <- ggplot() +
   ) +
   
   scale_x_continuous(
-    breaks = seq(1970, 2024, 5),
-    limits = c(1970, 2030),  # Extra space for labels
+    breaks = seq(1970, 2024, 4),
+    limits = c(1970, 2034),  # Extra space for labels
     expand = expansion(mult = c(0.01, 0))
   ) +
   
   # ── Labels ─────────────────────────────────────────────────────────────────
   labs(
     title = "The Rise and Plateau of Manufacturing in East & Southeast Asia",
-    subtitle = "Manufacturing share of total value added · Seven major economies, 1970–2023",
+    subtitle = "Manufacturing share of total value added · Seven major economies, 1970–2024",
     x = NULL,
     y = "Manufacturing share of economy",
     caption = "Note: Shaded areas indicate major economic crises.\nSource: UN National Accounts Main Aggregates Database (constant 2020 USD)"
@@ -845,17 +846,256 @@ p5 <- ggplot() +
   )
 
 # Primary vs Secondary Export
+# ── Palette consistent with growth accounting charts ──────────────────────────
+col_2000 <- "grey70"
+col_2023 <- "#2166ac"
 
-# Lall technology classification
+# ── Legend key data ───────────────────────────────────────────────────────────
+legend_data <- tibble(
+  x     = c(2000, 2023),
+  label = c("2000", "2023"),
+  color = c(col_2000, col_2023)
+)
 
-# Manufacturing export intensity chart
+pt_offset <- 0.8  # in percentage point units
+
+p6 <- trade_data_asea_lall_broad %>%
+  filter(flow_desc == "Export",
+         ref_year %in% c(2000, 2023)) %>%
+  select(ref_year, reporter_desc, broad_category, broad_share) %>%
+  pivot_wider(names_from   = ref_year,
+              values_from  = broad_share,
+              names_prefix = "year_") %>%
+  mutate(
+    # ── Direction-aware offset ─────────────────────────────────────────────
+    direction  = if_else(year_2023 >= year_2000, 1, -1),
+    seg_x      = year_2000 + direction * pt_offset,
+    seg_xend   = year_2023 - direction * pt_offset
+  ) %>%
+  
+  ggplot(aes(y = reorder(broad_category, year_2023))) +
+  
+  # ── Connector segment ────────────────────────────────────────────────────────
+  geom_segment(
+    aes(
+      x    = seg_x,
+      xend = seg_xend,
+      yend = broad_category
+    ),
+    arrow     = arrow(length = unit(0.18, "cm"), type = "closed"),
+    linewidth = 0.65,
+    color     = "grey50"
+  ) +
+  
+  # ── Start point (1990) ───────────────────────────────────────────────────────
+  geom_point(aes(x = year_2000),
+             color = col_2000, size = 3.2, shape = 19) +
+  
+  # ── End point (2024) ─────────────────────────────────────────────────────────
+  geom_point(aes(x = year_2023),
+             color = col_2024, size = 3.2, shape = 19) +
+  
+  scale_color_manual(
+    name   = NULL,
+    values = c("2000" = col_2000, "2023" = col_2023),
+    guide  = guide_legend(override.aes = list(size = 3.5))
+  ) +
+  
+  # ── Facet ────────────────────────────────────────────────────────────────────
+  facet_wrap(~ reporter_desc, ncol = 2) +
+  
+  # ── Axis ─────────────────────────────────────────────────────────────────────
+  scale_x_continuous(
+    labels = scales::label_number(suffix = "%", accuracy = 1),
+    expand = expansion(mult = c(0.05, 0.08))
+  ) +
+  
+  # ── Labels ───────────────────────────────────────────────────────────────────
+  labs(
+    title    = "Structural Export Transformation: 2000 to 2023",
+    subtitle = "Arrow direction indicates shift in export share · Grey = 2000 · Blue = 2023",
+    x        = "Share of Total Exports (%)",
+    y        = NULL,
+    caption  = "Source: UN Comtrade via Lall (2000) broad technology classification"
+  ) +
+  
+  # ── Theme ────────────────────────────────────────────────────────────────────
+  theme_minimal(base_size = 12) +
+  theme(
+    # Titles
+    plot.title         = element_text(face = "bold", size = 13,
+                                      margin = margin(b = 4)),
+    plot.subtitle      = element_text(size = 9, color = "grey40",
+                                      margin = margin(b = 8)),
+    plot.caption       = element_text(size = 7.5, color = "grey50",
+                                      hjust = 0, margin = margin(t = 8)),
+    plot.margin        = margin(12, 14, 10, 12),
+    
+    # Facet strips
+    strip.text         = element_text(face = "bold", size = 10.5),
+    strip.background   = element_rect(fill = "grey93", color = NA),
+    
+    # Axes
+    axis.text.x        = element_text(size = 8.5, color = "grey30"),
+    axis.text.y        = element_text(size = 8.5, color = "grey20"),
+    axis.title.x       = element_text(size = 9, margin = margin(t = 8)),
+    
+    # Grid — keep horizontal only (guides the eye along dumbbells)
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "grey88",
+                                      linetype  = "dotted"),
+    panel.grid.major.x = element_line(linewidth = 0.25, color = "grey92"),
+    panel.grid.minor   = element_blank(),
+    panel.spacing      = unit(1.2, "lines"),
+    
+    # Legend
+    legend.position    = "bottom",
+    legend.direction   = "horizontal",
+    legend.text        = element_text(size = 9),
+    legend.key.size    = unit(0.45, "cm"),
+    legend.margin      = margin(t = 2)
+  )
+
+# Employment by Industry
+emp_inds <- apo_database %>% 
+  filter(code %in% c("50100", "50200", "50300", "50400", "50500", "50600", "50700", "50800", "50900"),
+         country %in% c("Indonesia", "Malaysia", "China", "Thailand", "Vietnam", "Korea"),
+         group == "Employment by industry") %>% 
+  pivot_longer(
+    cols = matches("[0-9]+"),
+    names_to = "year",
+    values_to = "values"
+  )
+
+# Services (Wholesale + Transport + Financial + social)    
+emp_inds_serv <- emp_inds %>% 
+  filter(code %in% c("50600", "50700", "50800", "50900")) %>% 
+  group_by(country, country_id, year, unit) %>% 
+  summarise(group = "Services",
+            code = "5555",
+            variable = "Services",
+            values = sum(values, na.rm = TRUE))
+
+# total employment
+emp_inds_tot <- emp_inds %>%
+  group_by(country, country_id, year, unit) %>% 
+  summarise(total_emp  = sum(values, na.rm = TRUE))
 
 
+# pull gdp per cap
+gdp_cap_asean <- WDI(
+  country = c("ID", "MY", "TH", "PH", "CN", "JP", "VN", "KR", "SG"),
+  indicator = "NY.GDP.PCAP.KD",
+  start = 1970,
+  end = 2025,
+  extra = TRUE) %>% 
+  mutate(iso3c = case_when(iso3c == "MYS" ~ "MAL",
+                           iso3c == "VNM" ~ "VIE",
+                           .default = iso3c))
 
 
+# combined employment
+emp_inds_final <- emp_inds %>% 
+  filter(!code %in% c("50600","50700", "50800", "50900")) %>% 
+  bind_rows(emp_inds_serv) %>% 
+  arrange(country, variable) %>% 
+  ungroup() %>% 
+  group_by(country, country_id, year) %>% 
+  mutate(check_total = sum(values, na.rm = TRUE)) %>% 
+  left_join(emp_inds_tot, by = join_by(country, country_id, year)) %>% 
+  select(-unit.y) %>% 
+  mutate(share_emp = round((values/check_total * 100), 2)) %>% 
+  left_join(gdp_cap_asean %>% 
+              select(iso3c, year, NY.GDP.PCAP.KD) %>% 
+              rename("gdp_per_cap" = NY.GDP.PCAP.KD) %>% 
+              mutate(year = as.character(year)),
+            by = join_by(country_id == iso3c, year))
 
 
+# chart EMP manufacturing, agriculture and service share vs GDP per capita
+# Compute per-country scale factors
+# Country-specific scale factors (same approach as before)
+library(ggh4x)
 
 
+p7 <- emp_inds_final %>%
+  mutate(year = as.numeric(year)) %>% 
+  ggplot(aes(x = year)) +
+  
+  # Crisis shading
+  annotate("rect", xmin = 1997, xmax = 1999, ymin = -Inf, ymax = Inf,
+           fill = "grey90", alpha = 0.3) +
+  annotate("rect", xmin = 2008, xmax = 2010, ymin = -Inf, ymax = Inf,
+           fill = "grey90", alpha = 0.3) +
+  annotate("rect", xmin = 2020, xmax = 2021, ymin = -Inf, ymax = Inf,
+           fill = "grey90", alpha = 0.3) +
+  
+  # Event markers
+  geom_vline(data = key_events,
+             aes(xintercept = year),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  geom_text(data = key_events,
+            aes(x = year, y = Inf, label = label),
+            size = 2.5, color = "grey40", fontface = "italic",
+            hjust = 0.5, vjust = 1.5) +
+  
+  # Employment share lines (left axis)
+  geom_line(aes(y = share_emp, colour = variable, group = variable),
+            linewidth = 0.8, lineend = "round", linejoin = "round", alpha = 0.9) +
+  
+  facet_wrap(~ country, scales = "free_y", ncol = 3) +
+  
+  scale_y_continuous(
+    name   = "Employment Share (% of Total)",
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  scale_x_continuous(
+    breaks = seq(1970, 2023, by = 10),
+    expand = expansion(mult = c(0.01, 0))
+  ) +
+  
+  scale_colour_manual(values = c(
+    "#E63946", "#457B9D", "#1D3557",
+    "#F4A261", "#2A9D8F", "#E9C46A"
+  )) +
+  
+  labs(
+    title    = "Sectoral Employment Share",
+    subtitle = "Employment share by sector",
+    x        = NULL,
+    colour   = "Sector",
+    caption  = "Note: Shaded areas indicate major economic crises.\nSource: APO Database 2025"
+  ) +
+  
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    strip.text         = element_text(face = "bold", size = 10, color = "grey10"),
+    strip.background   = element_rect(fill = "#FAFAFA", color = NA),
+    legend.position    = "bottom",
+    legend.title       = element_text(size = 9,  color = "grey20"),
+    legend.text        = element_text(size = 8.5, color = "grey20"),
+    plot.title         = element_text(face = "bold", size = 15, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
 
+# FDI movements both Foreign and Domestic Investment
 
