@@ -2,7 +2,7 @@ library(comtradr)
 library(tidyverse)
 
 # set comtrade api key
-set_primary_comtrade_key("e4aec86321394cd59b9583109faf9e9a")
+set_primary_comtrade_key()
 
 # Download UNcoMTRADE data
 # it will be function 
