@@ -149,6 +149,7 @@ grid.text(
 ```
 
 ## Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
+
 ```{r}
 #| label: fig-growth-decomp
 #| fig-width: 13
@@ -184,7 +185,6 @@ grid.text(
 
 
 ```
-
 
 ## Primary vs Secondary Export
 

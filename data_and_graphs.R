@@ -783,7 +783,7 @@ p5 <- ggplot() +
   
   scale_x_continuous(
     breaks = seq(1970, 2024, 4),
-    limits = c(1970, 2034),  # Extra space for labels
+    limits = c(1970, 2034),  
     expand = expansion(mult = c(0.01, 0))
   ) +
   
