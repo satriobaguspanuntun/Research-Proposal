@@ -652,23 +652,16 @@ p5 <- apo_database %>%
 # Medium-and-high technology manufactured export, Manufactured Export, and commodity export (Highly likely that some of the commodity export is being part of manufactured export. May need to redefine the definition of Manufactured export.)
 
 # Manufacture value added % of total value added
-# ── 1. Better color palette ──────────────────────────────────────────────────
 # Option A: Highlight Indonesia, mute others
 country_colors <- c(
-  "Indonesia"         = "#E63946",  # Bold red - your focus
-  "Viet Nam"           = "#457B9D",  # Muted blue
-  "Republic of Korea" = "#1D3557",  # Dark blue
-  "China"             = "#F4A261",  # Warm orange
-  "Malaysia"          = "#2A9D8F",  # Teal
-  "Thailand"          = "#E9C46A",  # Gold
-  "Philippines"       = "#A8DADC"   # Light blue
+  "Indonesia"         = "#E63946",
+  "Viet Nam"           = "#457B9D",
+  "Republic of Korea" = "#1D3557",
+  "China"             = "#F4A261",
+  "Malaysia"          = "#2A9D8F",
+  "Thailand"          = "#E9C46A",  
+  "Philippines"       = "#A8DADC"
 )
-
-# Option B: Categorical palette (if no country is focus)
-# country_colors <- setNames(
-#   c("#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#E63946", "#457B9D"),
-#   c("Indonesia", "Vietnam", "Republic of Korea", "China", "Malaysia", "Thailand", "Philippines")
-# )
 
 # ── 2. Prepare data ──────────────────────────────────────────────────────────
 plot_data <- unsd_na_data %>% 
