@@ -234,8 +234,13 @@ ft <- df_display %>%
     locations = cells_column_labels()
   ) %>%
   tab_style(
-    style = cells_title
-  )
+    style = cell_text(size = "large"),
+    locations = cells_title(groups = "title")
+  ) %>% 
+  tab_style(
+    style = cell_text(size = "medium"),
+    locations = cells_title(groups = "subtitle")
+  ) %>% 
   
   # table options
   tab_options(
