@@ -233,6 +233,9 @@ ft <- df_display %>%
     style = cell_text(color = "white", weight = "bold"),
     locations = cells_column_labels()
   ) %>%
+  tab_style(
+    style = cells_title
+  )
   
   # table options
   tab_options(
