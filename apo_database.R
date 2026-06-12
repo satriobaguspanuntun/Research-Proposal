@@ -1,9 +1,9 @@
 library(tidyverse)
 library(openxlsx)
 library(readxl)
+library(gt)
 
 #APO data
-
 apo_path <- "~/Research-Proposal/data/APO-Productivity-Database-2025v1-1.xlsx"
 
 apo_sheetnames <- getSheetNames(apo_path)[-1]
@@ -158,25 +158,109 @@ hierarchy <- tibble(
             1, 1)
 )
 
-library(gt)
-
 df_display <- df %>%
   left_join(hierarchy, by = "code") %>%
-  arrange(code)
+  arrange(code) %>% 
+  rename("Sector" = variable) %>% 
+  filter(!code %in% c("31000", "31100")) %>% 
+  filter(code %in% c("30100", "30200", "30300", "30400", "30500", "30600", 
+                     "30700", "30800", "30810", "30820", "30900"))
 
 # row indices for each level
 rows_l1 <- which(df_display$level == 1)
 rows_l2 <- which(df_display$level == 2)
 rows_l3 <- which(df_display$level == 3)
 
-ft <- df_display %>%
+ft <- df_display %>% 
   select(-code, -level, -country) %>%
   gt() %>%
   
   tab_header(
     title = "Industrial Growth by Sector",
-    subtitle = "Real value added, annualised growth rate"
+    subtitle = "Real value added, annualised growth rate %"
+  ) %>%
+  
+  opt_align_table_header(align = "left") %>% 
+  
+  cols_width(
+    matches("^[0-9]{4}-[0-9]{4}$") ~ px(100),
+    1 ~ px(150)
   ) %>% 
+  
+  cols_align(
+    align = "center",
+    columns = matches("^[0-9]{4}-[0-9]{4}$")
+  ) %>% 
+  
+  # format numbers
+  fmt_number(
+    columns = 2:8,
+    decimals = 2
+  ) %>%
+  fmt_missing(
+    columns = everything(),
+    missing_text = "—"
+  ) %>%
+  
+  # level 1 — bold, no indent
+  tab_style(
+    style = list(
+      cell_text(weight = "bold")
+    ),
+    locations = cells_body(rows = rows_l1)
+  ) %>%
+  
+  # header styling
+  tab_style(
+    style = cell_fill(color = "#2C3E50"),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_text(color = "white", weight = "bold"),
+    locations = cells_column_labels()
+  ) %>%
+  tab_style(
+    style = cell_text(size = "large"),
+    locations = cells_title(groups = "title")
+  ) %>% 
+  tab_style(
+    style = cell_text(size = "medium"),
+    locations = cells_title(groups = "subtitle")
+  ) %>% 
+  
+  tab_source_note(source_note = "Source: Author Calculation, APO Database 2025") %>% 
+  
+  # table options
+  tab_options(
+    table.font.size = px(12),
+    row.striping.include_table_body = TRUE,
+    row.striping.background_color = "#F5F5F5",
+    table.border.top.color          = "#1F4E79",
+    table.border.top.width          = px(3)
+  )
+
+ft %>%  gtsave("tab_1.png")
+
+df_display_2 <- df %>%
+  left_join(hierarchy, by = "code") %>%
+  arrange(code) %>% 
+  rename("Sector" = variable) %>% 
+  filter(!code %in% c("31000", "31100")) %>% 
+  filter(code %in% c("30300", "30310", "30320", "30330", "30340", "30350", "30360",
+                     "30370", "30380", "30381", "30382", "30383", "30384", "30390"))
+
+rows_l1 <- which(df_display_2$level == 1)
+rows_l2 <- which(df_display_2$level == 2)
+rows_l3 <- which(df_display_2$level == 3)
+
+ft_2 <- df_display_2 %>%
+  select(-code, -level, -country) %>%
+  gt() %>%
+  
+  tab_header(
+    title = "Manufacturing Sector Growth and Its Components",
+    subtitle = "Real value added, annualised growth rate %"
+  ) %>%
   
   opt_align_table_header(align = "left") %>% 
   
@@ -213,7 +297,7 @@ ft <- df_display %>%
     style = list(
       cell_text(indent = px(15))
     ),
-    locations = cells_body(columns = "variable", rows = rows_l2)
+    locations = cells_body(columns = "Sector", rows = rows_l2)
   ) %>%
   
   # level 3 — indent 30px + italic
@@ -221,7 +305,7 @@ ft <- df_display %>%
     style = list(
       cell_text(indent = px(30), style = "italic")
     ),
-    locations = cells_body(columns = "variable", rows = rows_l3)
+    locations = cells_body(columns = "Sector", rows = rows_l3)
   ) %>%
   
   # header styling
@@ -242,9 +326,15 @@ ft <- df_display %>%
     locations = cells_title(groups = "subtitle")
   ) %>% 
   
+  tab_source_note(source_note = "Source: Author Calculation, APO Database 2025") %>% 
+  
   # table options
   tab_options(
     table.font.size = px(12),
     row.striping.include_table_body = TRUE,
-    row.striping.background_color = "#F5F5F5"
+    row.striping.background_color = "#F5F5F5",
+    table.border.top.color          = "#1F4E79",
+    table.border.top.width          = px(3)
   )
+
+ft_2 %>%  gtsave("tab_2.png")
