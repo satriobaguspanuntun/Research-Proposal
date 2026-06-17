@@ -1526,3 +1526,85 @@ p14 <- emp_inds_final %>%
     plot.margin        = margin(15, 15, 15, 15)
   )
 
+# interest rate
+p15 <- imf_data %>%
+  filter(country == "IDN") %>% 
+  mutate(obs_value = as.numeric(obs_value),
+         time_period = ym(time_period)) %>% 
+  select(-indicator) %>% 
+  pivot_wider(names_from = indicator_name,
+              values_from =  obs_value) %>% 
+  left_join(indo_interest, join_by(country, time_period)) %>% 
+  select(-series_id, -ifs_flag, -overlap, -scale, -access_sharing_level,
+         -security_classification, -derivation_type, -status,
+         -`Deposit rate, Foreign Currency, Rate, Percent per annum`,
+         -`Lending rate, Foreign Currency, Rate, Percent per annum`) %>% 
+  pivot_longer(cols = 4:ncol(.),
+               names_to = "var",
+               values_to = "values") %>% 
+  filter(time_period >= "1991-01-01", time_period <= "2005-01-01", var != "Money market Rate, Percent per annum") %>% 
+  ggplot(aes(x = time_period, y = values, colour = var)) +
+  geom_line(linewidth = 0.8, lineend = "round", linejoin = "round", alpha = 0.9) +
+  # Crisis shading
+  annotate("rect", xmin = as.Date("1997-01-01"), xmax = as.Date("1999-01-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1997-01-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.05, vjust = 1.5) +
+  # Event markers
+  geom_vline(xintercept = as.Date("1997-01-01"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) +
+  
+  scale_y_continuous(
+    name   = "% Per Annum",
+    breaks = seq(0, 75, by = 10),
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  scale_colour_manual(values = c(
+    "#1D3557", "#2A9D8F", "#E9C46A"
+  )) +
+  
+  labs(
+    title    = "Indonesia Interest Rates",
+    subtitle = "Percentage Per Annum: 1993-2005",
+    x        = NULL,
+    fill     = NULL,
+    caption  = "Note: Shaded area indicates Asian Financial Crisis.\nSource: FRED Database, IMF Monetary Statistics, OECD"
+  ) + 
+  
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    legend.position    = "bottom",
+    legend.title       = element_blank(),
+    legend.text        = element_text(size = 8.5, color = "grey20"),
+    plot.title         = element_text(face = "bold", size = 15, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
+

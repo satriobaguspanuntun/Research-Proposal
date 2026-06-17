@@ -74,8 +74,8 @@ imf_api_wrapper <- function(database_id, dataflow_id, indicator, indicator_name,
   indicator_filter <- paste(indicator, collapse = "+")
   country_filter <- paste(country, collapse = "+")
   filter <- paste(country_filter, indicator_filter,  freq, sep = ".")
-  indicator_base <- data.frame(indicator_code = indicator,
-                               indicator_name = indicator_name)
+  # indicator_base <- data.frame(indicator_code = indicator,
+  #                              indicator_name = indicator_name)
   
   df_raw <- as.data.frame(
     readSDMX(
@@ -105,6 +105,9 @@ imf_api_wrapper <- function(database_id, dataflow_id, indicator, indicator_name,
   return(df_raw)
 }
 
+indicator_df <- data.frame(indicator = indicator_vec,
+                           indicator_name = indicator_name)
+
 imf_data <- imf_api_wrapper(database_id = database,
                             dataflow_id = dataflow,
                             indicator = indicator_vec,
@@ -112,9 +115,24 @@ imf_data <- imf_api_wrapper(database_id = database,
                             country = country_target, 
                             start_period = start, 
                             end_period = end, 
-                            freq = freq)
+                            freq = freq) %>% 
+  left_join(indicator_df)
 
+library(tidyverse)
+library(fredr)
 
+# interbank rates Indonesia
+indo_interest <- fredr(
+  series_id = "IRSTCI01IDM156N",
+  observation_start = as.Date("1980-01-01"),
+  observation_end = as.Date("2026-01-01"),
+  units = "lin",
+  frequency = "m"
+) %>% 
+  mutate(country = "IDN",
+         time_period = ymd(date),
+         indicator_name = "")%>% 
+  select(-date, -realtime_start, -realtime_end)
 
 # Exchange rate
 database <- "IMF.STA"
