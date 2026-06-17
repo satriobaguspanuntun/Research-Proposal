@@ -55,6 +55,13 @@ imf_api_wrapper <- function(database_id, dataflow_id, indicator, indicator_name,
     
   }
   
+  transform_checker <- function(indicator_vec) {
+    
+    transform_detect <- str_split(indicator_vec, pattern = "\\.")
+    
+    
+  }
+  
   period_checker(start_period)
   period_checker(end_period)
   
@@ -70,7 +77,6 @@ imf_api_wrapper <- function(database_id, dataflow_id, indicator, indicator_name,
   indicator_base <- data.frame(indicator_code = indicator,
                                indicator_name = indicator_name)
   
-  
   df_raw <- as.data.frame(
     readSDMX(
       providerId = "IMF_DATA",
@@ -84,7 +90,17 @@ imf_api_wrapper <- function(database_id, dataflow_id, indicator, indicator_name,
   
   colnames(df_raw) <- tolower(colnames(df_raw))
   
-  df_raw <- df_raw %>% left_join(indicator_base, by = join_by(indicator == indicator_code))
+  # if (any(colnames(df_raw) == "type_of_transformation")) {
+  #   
+  #   indicator_base <- indicator_base %>% 
+  #     separate_wider_delim(indicator_code, delim = ".", names = c("code", "transform")) %>% 
+  #     mutate(code = str_squish(code),
+  #            transform = str_squish(transform)) %>% 
+  #     rename("indicator_code" = code)
+  # }
+  
+  # df_raw %>% left_join(indicator_base, by = join_by(indicator == indicator_code))
+  
   
   return(df_raw)
 }
@@ -98,4 +114,95 @@ imf_data <- imf_api_wrapper(database_id = database,
                             end_period = end, 
                             freq = freq)
 
+
+
+# Exchange rate
+database <- "IMF.STA"
+
+dataflow <- "ER"
+
+indicator_vec <- c("XDC_USD", "USD_XDC", ".PA_RT")
+
+indicator_name <- c("Domestic currency per US Dollar", "US Dollar per DOmestic currency")
+
+country_target <- c("IDN", "MYS", "THA", "KOR", "PHL")
+
+start <- "1993-01"
+end <- "2026-05"
+freq <- "M"
+
+
+indicator_df <- data.frame(indicator_code = indicator_vec[1:2],
+                           type_of_transformation = indicator_vec[3],
+                           indicator_name = indicator_name)
+
+imf_data_exchange <- imf_api_wrapper(database_id = database,
+                            dataflow_id = dataflow,
+                            indicator = indicator_vec,
+                            indicator_name = indicator_name,
+                            country = country_target, 
+                            start_period = start, 
+                            end_period = end, 
+                            freq = freq) %>% 
+  left_join(indicator_df)
+
+
+# inflation
+database <- "IMF.STA"
+
+dataflow <- "CPI"
+
+indicator_vec <- c("CPI._T.YOY_PCH_PA_PT")
+
+indicator_name <- c("Inflation")
+
+country_target <- c("IDN", "MYS", "THA", "KOR", "PHL")
+
+start <- "1993-01"
+end <- "2026-05"
+freq <- "A"
+
+indicator_df <- data.frame(index_type = "CPI",
+                           indicator_name = indicator_name)
+
+
+imf_data_inflation <- imf_api_wrapper(database_id = database,
+                                     dataflow_id = dataflow,
+                                     indicator = indicator_vec,
+                                     indicator_name = indicator_name,
+                                     country = country_target, 
+                                     start_period = start, 
+                                     end_period = end, 
+                                     freq = freq) %>% 
+  left_join(indicator_df)
+
+
+# unemployment & GDP
+database <- "IMF.RES"
+
+dataflow <- "WEO"
+
+indicator_vec <- c("LUR", "NGDP_RPCH")
+
+indicator_name <- c("Unemployment rate", "Real GDP YoY")
+
+country_target <- c("IDN", "MYS", "THA", "KOR", "PHL")
+
+start <- "1993-01"
+end <- "2026-05"
+freq <- "A"
+
+indicator_df <- data.frame(indicator = indicator_vec,
+                           indicator_name = indicator_name)
+
+
+imf_data_unemp <- imf_api_wrapper(database_id = database,
+                                      dataflow_id = dataflow,
+                                      indicator = indicator_vec,
+                                      indicator_name = indicator_name,
+                                      country = country_target, 
+                                      start_period = start, 
+                                      end_period = end, 
+                                      freq = freq) %>% 
+  left_join(indicator_df)
 

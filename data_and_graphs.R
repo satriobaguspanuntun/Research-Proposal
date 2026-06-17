@@ -1090,9 +1090,439 @@ p7 <- emp_inds_final %>%
     plot.margin        = margin(15, 15, 15, 15)
   )
 
-# FDI movements both Foreign and Domestic Investment
+# Manufacturing export 1990-2005
+trade_data_asea_lall_broad %>% 
+  filter(flow_desc == "Export") %>% 
+  ggplot(aes(x = ref_year, y = total_broad, colour = broad_category, group = broad_category)) +
+  geom_line()
 
 
+p8 <- trade_data_asean %>% 
+  mutate(sitc1 = substr(sitc3,start = 1, stop = 1),
+         sitc2 = substr(sitc3,start = 1, stop = 2)) %>% 
+  filter(sitc1 %in% c("5", "6", "7", "8")) %>% 
+  filter(sitc2 != "68") %>%
+  group_by(ref_year, flow_desc) %>% 
+  summarise(manufacturing_value = sum(primary_value, na.rm = TRUE)/1e9) %>% 
+  ungroup() %>% 
+  arrange(desc(flow_desc)) %>% 
+  mutate(yoy_growth = ((manufacturing_value - lag(manufacturing_value))/lag(manufacturing_value)) * 100) %>% 
+  filter(ref_year <= 2005 & ref_year >= 1990) %>% 
+  ggplot(aes(x = ref_year, y = yoy_growth, colour = flow_desc)) +
+  geom_line(linewidth = 0.8, lineend = "round", linejoin = "round", alpha = 0.9) +
+  # Crisis shading
+  annotate("rect", xmin = 1997, xmax = 1999, ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = 1997, y = Inf, label = "Asian Financial Crisis",
+           size = 2.5, color = "grey40", fontface = "italic",
+           hjust = -0.05, vjust = 1.5) +
+  # Event markers
+  geom_vline(aes(xintercept = 1997),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  
+  scale_y_continuous(
+    name   = "YoY Growth Rate %",
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  scale_x_continuous(
+    breaks = seq(1990, 2005, by = 1),
+    expand = expansion(mult = c(0.01, 0))
+  ) + 
+  
+  scale_colour_manual(values = c(
+    "#1D3557", "#E63946"
+  )) +
+  
+  labs(
+    title    = "Manufactures Exports & Imports",
+    subtitle = "Year-on-Year Growth Rate: 1990-2005",
+    x        = NULL,
+    colour   = "Trade Direction",
+    caption  = "Note: Shaded areas indicate Asian Financial Crisis.\nSource: Author Calculation, UN Comtrade"
+  ) + 
+
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    strip.text         = element_text(face = "bold", size = 10, color = "grey10"),
+    strip.background   = element_rect(fill = "#FAFAFA", color = NA),
+    legend.position    = "bottom",
+    legend.title       = element_text(size = 9,  color = "grey20"),
+    legend.text        = element_text(size = 8.5, color = "grey20"),
+    plot.title         = element_text(face = "bold", size = 15, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
 
 
+# Exchange rate
+p10 <- imf_data_exchange %>% 
+  mutate(year = str_extract(time_period, "[0-9]{4}"),
+         month = str_extract(time_period, "M[0-9]{2}"),
+         period = lubridate::ym(paste0(year,"-",month)),
+         obs_value = as.numeric(obs_value)) %>% 
+  filter(indicator == "XDC_USD" & country == "IDN" & period <= "2005-01-01") %>% 
+  ungroup() %>% 
+  ggplot(aes(x = period, y = obs_value)) +
+  geom_line(linewidth = 0.8, lineend = "round", linejoin = "round",
+            colour = "#1D3557", alpha = 0.9) +
+  # Crisis shading
+  annotate("rect", xmin = as.Date("1997-01-01"), xmax = as.Date("1999-01-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1997-01-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.1, vjust = 1.5) +
+  # Event markers
+  geom_vline(xintercept = as.Date("1997-01-01"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  
+  scale_y_continuous(
+    name   = "Rupiah per US Dollar",
+    breaks = seq(0, 18000, by = 2000),
+    labels = scales::comma
+  ) +
+  
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) + 
+  
+  labs(
+    title    = "Indonesian Rupiah Exchange Rate",
+    subtitle = "Rupiah per US Dollar, Monthly: pre-2006",
+    x        = NULL,
+    caption  = "\nSource: IMF Exchange Rate Statistics"
+  ) + 
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    strip.text         = element_text(face = "bold", size = 10, color = "grey10"),
+    strip.background   = element_rect(fill = "#FAFAFA", color = NA),
+    legend.position    = "none",
+    plot.title         = element_text(face = "bold", size = 12, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
+
+# Unemployment & GDP (two y axis)
+df_plot_imf_unemp <- imf_data_unemp %>%
+  select(-indicator) %>% 
+  mutate(obs_value = as.numeric(obs_value),
+         time_period = ym(paste0(time_period, "-01"))) %>% 
+  pivot_wider(names_from = "indicator_name", values_from = "obs_value")
+
+p11 <- df_plot_imf_unemp %>% 
+  filter(country == "IDN" & time_period <= "2005-01-01") %>% 
+  pivot_longer(cols = c(`Unemployment rate`, `Real GDP YoY`),
+               names_to = "series", values_to = "value") %>% 
+  ggplot(aes(x = time_period, y = value, colour = series)) +
+  geom_line(linewidth = 0.8, lineend = "round", linejoin = "round", alpha = 0.9) +
+  
+  annotate("rect", xmin = as.Date("1997-01-01"), xmax = as.Date("1999-01-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1997-01-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.08, vjust = 1.5) +
+  
+  geom_vline(xintercept = as.Date("1997-01-01"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  
+  scale_y_continuous(
+    name   = "Percent (%)",
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  scale_x_date(
+    date_breaks = "1 years",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) +
+  
+  scale_colour_manual(values = c(
+    "Unemployment rate" = "#1D3557",
+    "Real GDP YoY"      = "#E63946"
+  )) +
+  
+  labs(
+    title    = "Unemployment Rate & Real GDP Growth",
+    subtitle = "Year-on-Year, 1993-2005",
+    x        = NULL,
+    colour   = NULL,
+    caption  = "\nSource: IMF World Economic Outlook"
+  ) +
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    legend.position    = "bottom",
+    legend.title       = element_text(size = 9,  color = "grey20"),
+    legend.text        = element_text(size = 8.5, color = "grey20"),
+    plot.title         = element_text(face = "bold", size = 12, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
+
+# inflation
+p12 <- imf_data_inflation %>%
+  mutate(obs_value = as.numeric(obs_value),
+         time_period = ym(paste0(time_period, "-01"))) %>% 
+  filter(country == "IDN" & time_period <= "2005-01-01") %>% 
+  ggplot(aes(x = time_period, y = obs_value)) +
+  geom_line(linewidth = 0.8, lineend = "round", linejoin = "round",
+            colour = "#1D3557", alpha = 0.9) +
+  # Crisis shading
+  annotate("rect", xmin = as.Date("1997-01-01"), xmax = as.Date("1999-01-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1997-01-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.05, vjust = 1.5) +
+  # Event markers
+  geom_vline(xintercept = as.Date("1997-01-01"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  
+  scale_y_continuous(
+    name   = "YoY Change %",
+    labels = function(x) paste0(x, "%")
+  ) +
+  
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) + 
+  
+  labs(
+    title    = "Inflation Rate",
+    subtitle = "YoY Change %, 1993-2005",
+    x        = NULL,
+    caption  = "Note: Shaded area indicates Asian Financial Crisis.\nSource: IMF CPI Statistics"
+  ) + 
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    strip.text         = element_text(face = "bold", size = 10, color = "grey10"),
+    strip.background   = element_rect(fill = "#FAFAFA", color = NA),
+    legend.position    = "none",
+    plot.title         = element_text(face = "bold", size = 12, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
+  
+# FDI net inflow
+
+p13 <- sector_contr_gdp %>%
+  filter(iso3c == "IDN") %>% 
+  select(iso3c, year, BX.KLT.DINV.CD.WD) %>% 
+  rename("FDI Net Inflow" = BX.KLT.DINV.CD.WD) %>% 
+  mutate(`FDI Net Inflow` = `FDI Net Inflow`/1e9,
+         year = ym(paste0(year, "-01")),
+         sign = ifelse(`FDI Net Inflow` >= 0, "Positive", "Negative")) %>% 
+  drop_na() %>% 
+  filter(year <= "2005-01-01" & year >= "1990-01-01") %>% 
+  ggplot(aes(x = year, y = `FDI Net Inflow`, fill = sign)) +
+  geom_col(width = 200, alpha = 0.9) +
+  # Crisis shading
+  annotate("rect", xmin = as.Date("1996-09-25"), xmax = as.Date("1999-05-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1996-10-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.05, vjust = 1.5) +
+  # Event markers
+  geom_vline(xintercept = as.Date("1996-09-25"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  geom_hline(yintercept = 0, colour = "grey30", linewidth = 0.5, linetype = "dashed") +
+  
+  scale_y_continuous(
+    name   = "Millions US Dollar",
+    breaks = seq(-5, 10, by = 3),
+    labels = function(x) paste0("$", x, "M")
+  ) +
+  
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) + 
+  
+  scale_fill_manual(values = c("Positive" = "#1D3557", "Negative" = "#E63946")) +
+  
+  labs(
+    title    = "FDI Net Inflow",
+    subtitle = "Millions US Dollar, 1993-2005",
+    x        = NULL,
+    caption  = "\nSource: World Bank, IMF Balance of Payment Statistics"
+  ) + 
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    strip.text         = element_text(face = "bold", size = 10, color = "grey10"),
+    strip.background   = element_rect(fill = "#FAFAFA", color = NA),
+    legend.position    = "none",
+    plot.title         = element_text(face = "bold", size = 12, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
+
+# employment 1997-999
+p14 <- emp_inds_final %>% 
+  filter(country == "Indonesia") %>% 
+  group_by(variable) %>% 
+  arrange(year, .by_group = TRUE) %>% 
+  mutate(share_change_pp = share_emp - lag(share_emp),
+         year = ymd(paste0(year,"-01-01"))) %>% 
+  ungroup() %>% 
+  filter(year >= "1993-01-01", year <= "2005-01-01") %>% 
+  ggplot(aes(x = year, y = share_change_pp, fill = variable)) +
+  geom_col(position = "stack", width = 290, alpha = 0.9) +
+  
+  # Crisis shading
+  annotate("rect", xmin = as.Date("1996-08-01"), xmax = as.Date("1999-06-01"),
+           ymin = -Inf, ymax = Inf,
+           fill = "grey80", alpha = 0.3) +
+  annotate("text", x = as.Date("1996-08-01"), y = Inf, label = "AFC 97-99",
+           size = 2.2, color = "grey40", fontface = "italic",
+           hjust = -0.05, vjust = 1.5) +
+  geom_vline(xintercept = as.Date("1996-08-01"),
+             linetype = "dotted", color = "grey40",
+             linewidth = 0.4, alpha = 0.6) +
+  geom_hline(yintercept = 0, colour = "grey30", linewidth = 0.5) +
+  
+  scale_fill_manual(values = c(
+    "#1D3557", "#E63946", "#2A9D8F", "#E9C46A", "#6D597A", "#457B9D"
+  )) +
+  
+  scale_y_continuous(
+    name   = "Change in employment share (pp)",
+    breaks = seq(-6, 6, by = 1.5),
+    labels = function(x) paste0(x, "pp")
+  ) +
+  
+  scale_x_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = c(0.01, 0))
+  ) + 
+  
+  labs(
+    title    = "Change in Employment Share by Sector",
+    subtitle = "Year-on-Year, Percentage Points: 1993-2005",
+    x        = NULL,
+    fill     = NULL,
+    caption  = "Note: Shaded area indicates Asian Financial Crisis.\nSource: Author Calculation, APO Database"
+  ) + 
+  theme_minimal(base_family = "sans", base_size = 11.5) +
+  theme(
+    panel.background   = element_rect(fill = "#FAFAFA", color = NA),
+    plot.background    = element_rect(fill = "white",   color = NA),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor   = element_blank(),
+    panel.grid.major.y = element_line(linewidth = 0.3, color = "white"),
+    axis.line.x        = element_line(color = "grey30", linewidth = 0.5),
+    axis.text.x        = element_text(size = 8, color = "grey20",
+                                      angle = 45, hjust = 1),
+    axis.text.y        = element_text(size = 8, color = "grey20"),
+    axis.title.y       = element_text(size = 10, margin = margin(r = 10),
+                                      color = "grey20"),
+    axis.ticks.x       = element_line(color = "grey40", linewidth = 0.3),
+    axis.ticks.length  = unit(2, "pt"),
+    legend.position    = "bottom",
+    legend.text        = element_text(size = 8.5, color = "grey20"),
+    plot.title         = element_text(face = "bold", size = 15, color = "grey10",
+                                      margin = margin(b = 4), lineheight = 1.1),
+    plot.subtitle      = element_text(size = 10, color = "grey40",
+                                      margin = margin(b = 15), lineheight = 1.2),
+    plot.caption       = element_text(size = 8, color = "grey50", hjust = 0,
+                                      margin = margin(t = 12), lineheight = 1.3),
+    plot.margin        = margin(15, 15, 15, 15)
+  )
 

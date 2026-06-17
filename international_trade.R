@@ -324,12 +324,13 @@ trade_data_wrap <- function(country_vector, start, end) {
     pivot_longer(starts_with("sitc_v3_"),
                  names_to = "conv_col",
                  values_to = "sitc_val") %>% 
-    mutate(conv_year = as.integer(str_extract(conv_col, "\\d{4}"))) %>% 
-    filter(is.na(conv_year) | conv_year <= ref_year) %>% 
-    mutate(is_valid = !is.na(sitc_val)) %>% 
+    mutate(conv_year = as.integer(str_extract(conv_col, "\\d{4}")))  %>% 
+    filter(!is.na(sitc_val)) %>%
+    group_by(row_id) %>% 
+    mutate(diff_year = conv_year - ref_year, 
+           max_year = max(diff_year)) %>%
+    filter(diff_year == max_year) %>% 
     arrange(row_id, desc(conv_year)) %>% 
-    group_by(row_id) %>%
-    slice_head(n = 1) %>%
     ungroup() %>% 
     mutate(sitc3 = substr(sitc_val, 1, 3)) %>% 
     left_join(lall_classification, join_by(sitc3 == Code))
@@ -337,11 +338,11 @@ trade_data_wrap <- function(country_vector, start, end) {
   return(trade_data)
 }
 
-inter_trade_data <- trade_data_wrap(country_vector = c("IDN", "THA", "MYS", "VNM", "KOR", "CHN"), 
-                                    start = "1990", 
+inter_trade_data <- trade_data_wrap(country_vector = c("IDN"), 
+                                    start = "1985", 
                                     end = "2010")
 
-inter_trade_data2 <- trade_data_wrap(country_vector = c("IDN", "THA", "MYS", "VNM", "KOR", "CHN"), 
+inter_trade_data2 <- trade_data_wrap(country_vector = c("IDN"), 
                                      start = "2011", 
                                      end = "2025")
 

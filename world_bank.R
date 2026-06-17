@@ -30,7 +30,9 @@ sector_contr_gdp <- WDI(
     # Natural resources rents
     "NY.GDP.TOTL.RT.ZS",
     # Manufacturing exports
-    "TX.VAL.MANF.ZS.UN"
+    "TX.VAL.MANF.ZS.UN",
+    # FDI Inflow 
+    "BX.KLT.DINV.CD.WD"
   ),
   start = 1970,
   end = 2025,

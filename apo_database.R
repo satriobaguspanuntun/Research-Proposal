@@ -97,7 +97,8 @@ ind_data_apo <- apo_database %>%
   filter(group == "GDP by industry at constant prices", country == "Indonesia") %>% 
   pivot_longer(cols = matches("^[0-9]{4}$"),
                names_to = "year",
-               values_to = "values")
+               values_to = "values") %>% 
+  group_by(variable)
 
 apo_industry_codes <- data.frame(variable = unique(ind_data_apo$variable),
                                  code = unique(ind_data_apo$code))
@@ -338,3 +339,15 @@ ft_2 <- df_display_2 %>%
   )
 
 ft_2 %>%  gtsave("tab_2.png")
+
+
+df_series <- ind_data_apo %>% 
+  mutate(growth = ((values - lag(values))/lag(values)) * 100) %>% 
+  filter(code %in% c("30300", "30310", "30320", "30330", "30340", "30350", "30360",
+              "30370", "30380", "30381", "30382", "30383", "30384", "30390")) %>% 
+  filter(year >= 1994) %>% 
+  ggplot(aes(x = year, y = growth, colour = variable, group = variable)) +
+  geom_line()
+
+
+
